@@ -2,10 +2,11 @@ import sys
 import time
 import math
 import copy
+import asyncio
 import pymongo
 from pymongo import MongoClient
 from traceback import print_exc
-from ticker import bFWebSocketIO
+from bFwebsocket import BFsocket, BFsocket
 
 
 
@@ -16,16 +17,19 @@ conf_ = {"host": "localhost",
          "database": "ticker",
          "collection": "BTC_JPY"}
 
-def get_stat():
-    _db = MongoClient(host=conf_["host"], port=conf_["port"], username=conf_["username"], password=conf_["password"])[conf_["database"]][conf_["collection"]]
-    #_db.tickers.create_index('_id')
-    print(_db.tickers.index_information())
+# def get_stat():
+#     _db = MongoClient(host=conf_["host"], port=conf_["port"], username=conf_["username"], password=conf_["password"])[conf_["database"]][conf_["collection"]]
+#     #_db.tickers.create_index('_id')
+#     print(_db.tickers.index_information())
 
 def send_data():
-    bf = bFWebSocketIO('BTC_JPY')
+    bf = BFsocket('BTC_JPY')
+    bf.start()
     pre_data = {}
+    print('go!!!')
     while True:
-        data = bf.get_msg()
+        data = BFsocket.get_last_price()
+        print(data)
         if data:
             #data['inserted_time'] = math.floor(time.time()*10)/10
             data['inserted_time'] = math.floor(time.time())
@@ -38,29 +42,30 @@ def send_data():
         pre_data=copy.copy(data)
         time.sleep(0.01)
 
-def set_index():
-    print('Hello world')
+# def set_index():
+#     print('Hello world')
 
-def get_data():
-    bf = bFWebSocketIO('BTC_JPY')
-    data = bf.get_msg()
-    return data
-    # while True:
-    #     data = bf.get_msg()
-    #     time.sleep(1)
-    #     return data
+# def get_data():
+#     bf = bFWebSocketIO('BTC_JPY')
+#     data = bf.get_msg()
+#     return data
+#     # while True:
+#     #     data = bf.get_msg()
+#     #     time.sleep(1)
+#     #     return data
 
 if __name__ == "__main__":
-    try:
-        if sys.argv[1] == "stat":
-            get_stat()
-        elif sys.argv[1] == "send":
-            send_data()
-        elif sys.argv[1] == "set":
-            set_index()
-        # elif sys.argv[1] == "check":
-        #     check_duplicated_content()
-        else:
-            raise Exception("unsupported")
-    except:
-        print_exc()
+    send_data()
+    # try:
+    #     if sys.argv[1] == "stat":
+    #         get_stat()
+    #     elif sys.argv[1] == "send":
+    #         send_data()
+    #     elif sys.argv[1] == "set":
+    #         set_index()
+    #     # elif sys.argv[1] == "check":
+    #     #     check_duplicated_content()
+    #     else:
+    #         raise Exception("unsupported")
+    # except:
+    #     print_exc()

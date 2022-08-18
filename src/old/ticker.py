@@ -1,4 +1,4 @@
-from bfWebsockts import WebSocketIO
+from src.old.bfWebsockts import WebSocketIO
 import time
 
 KEY = ''
